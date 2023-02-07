@@ -26,8 +26,6 @@ const MenuProps = {
   },
 };
 
-const names = ["Computer", "Smart Watch", "Accessories", "Headset"];
-
 function getStyles(name, categoryName, theme) {
   return {
     fontWeight:
@@ -37,20 +35,32 @@ function getStyles(name, categoryName, theme) {
   };
 }
 
-const Filter = () => {
+const Filter = ({
+  setQuery,
+  maxPrice,
+  setFilterPrice,
+  filterPrice,
+  category,
+  filterCategory,
+  setFilterCategory,
+}) => {
+  const names = category.map((item) => item.category_name);
+
   const theme = useTheme();
-  const [categoryName, setCategory] = React.useState([]);
   const [value, setValue] = React.useState(2);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setCategory(
+    setFilterCategory(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
   };
+
+  console.log("filterPrice", filterPrice);
+
   return (
     <Box
       sx={{
@@ -75,6 +85,7 @@ const Filter = () => {
           }}
           id="search"
           variant="outlined"
+          onChange={(e) => setQuery(e.target.value.toLowerCase())}
         />
       </Stack>
       <Typography variant="h6" sx={{ mb: 1, pt: 2 }}>
@@ -83,21 +94,24 @@ const Filter = () => {
       <Stack sx={{ pt: 2 }}>
         <Typography>Price</Typography>
         <Slider
-          defaultValue={50}
-          aria-label="Default"
+          step={100}
+          max={Number(maxPrice)}
+          default={Number(filterPrice)}
           valueLabelDisplay="auto"
           sx={{ color: "#282C34" }}
+          value={filterPrice}
+          onChange={(e) => setFilterPrice(Number(e.target.value))}
         />
       </Stack>
 
       <Stack sx={{ pt: 4 }}>
         <FormControl>
-          <InputLabel id="demo-multiple-chip-label">Category</InputLabel>
+          <InputLabel id="category">Category</InputLabel>
           <Select
-            labelId="demo-multiple-chip-label"
-            id="demo-multiple-chip"
+            labelId="category"
+            id="category"
             multiple
-            value={categoryName}
+            value={filterCategory}
             onChange={handleChange}
             input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
             renderValue={(selected) => (
@@ -113,7 +127,7 @@ const Filter = () => {
               <MenuItem
                 key={name}
                 value={name}
-                style={getStyles(name, categoryName, theme)}
+                style={getStyles(name, category, theme)}
               >
                 {name}
               </MenuItem>
