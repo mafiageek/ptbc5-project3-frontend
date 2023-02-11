@@ -19,6 +19,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { useCart } from "../context/cart";
 
 // import Ratings from "../components/Ratings";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,10 +28,19 @@ import axios from "axios";
 const ProductPage = () => {
   const params = useParams();
   const navigate = useNavigate();
+  const [cart, setCart] = useCart();
   const [product, setProduct] = useState({});
   const [image, setImage] = useState([]);
   const [category, setCategory] = useState([]);
   const [qty, setQty] = useState(1);
+
+  const handleCart = (product) => {
+    setCart([...cart, { ...product, stock: 1 }]);
+    localStorage.setItem(
+      "cart",
+      JSON.stringify([...cart, { ...product, stock: qty }])
+    );
+  };
 
   useEffect(
     () => {
@@ -47,10 +57,6 @@ const ProductPage = () => {
     [params.id],
     [category]
   );
-
-  const handleCart = () => {
-    // need a post to order controller
-  };
 
   return (
     <Container sx={{ mt: 10 }}>
@@ -126,7 +132,7 @@ const ProductPage = () => {
                     <TableRow>
                       <TableCell align="center">
                         <Button
-                          onClick={handleCart}
+                          onClick={() => handleCart(product)}
                           variant="contained"
                           sx={{ background: "black" }}
                           disabled={product.stock === 0}

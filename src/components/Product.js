@@ -10,9 +10,19 @@ import {
 import { Link } from "react-router-dom";
 // import Ratings from "./Ratings";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/cart";
 
 const Product = ({ product }) => {
   const navigate = useNavigate();
+  const [cart, setCart] = useCart();
+
+  const handleCart = (product) => {
+    setCart([...cart, { ...product, stock: 1 }]);
+    localStorage.setItem(
+      "cart",
+      JSON.stringify([...cart, { ...product, stock: 1 }])
+    );
+  };
   return (
     <Card
       sx={{
@@ -59,6 +69,7 @@ const Product = ({ product }) => {
         </Button>
 
         <Button
+          onClick={() => handleCart(product)}
           size="small"
           variant="contained"
           sx={{ backgroundColor: "#282C34" }}

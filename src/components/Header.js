@@ -1,4 +1,5 @@
 import React from "react";
+import { useCart } from "../context/cart";
 import {
   AppBar,
   Toolbar,
@@ -6,13 +7,15 @@ import {
   Stack,
   IconButton,
   Button,
+  Badge,
 } from "@mui/material";
 import { CatchingPokemonOutlined } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
+import { ShoppingCartOutlined } from "@mui/icons-material";
 
 const Header = () => {
   const navigate = useNavigate();
-
+  const [cart] = useCart();
   return (
     <AppBar sx={{ backgroundColor: "#282C34" }}>
       <Toolbar>
@@ -31,7 +34,11 @@ const Header = () => {
           <Button color="inherit" onClick={() => navigate("/products")}>
             Shop
           </Button>
-          <Button color="inherit">Cart</Button>
+          <Button color="inherit" onClick={() => navigate("/cart")}>
+            <Badge badgeContent={cart.length} color="primary">
+              <ShoppingCartOutlined />
+            </Badge>
+          </Button>
           <Button color="inherit">Login</Button>
         </Stack>
       </Toolbar>
