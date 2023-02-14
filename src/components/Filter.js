@@ -44,7 +44,7 @@ const Filter = ({
   filterCategory,
   setFilterCategory,
 }) => {
-  const names = category.map((item) => item.category_name);
+  const names = category.map((item) => item.categoryName);
 
   const theme = useTheme();
   const [value, setValue] = React.useState(2);
