@@ -23,6 +23,7 @@ const Product = ({ product }) => {
       JSON.stringify([...cart, { ...product, stock: 1 }])
     );
   };
+  console.log(product.productImages[0]?.urlString);
   return (
     <Card
       sx={{
@@ -31,11 +32,11 @@ const Product = ({ product }) => {
         display: "flex",
         flexDirection: "column",
       }}
-      key={product._id}
+      key={product.id}
     >
       <CardMedia
         sx={{ height: 140 }}
-        image={product.productImages[0].url_string}
+        image={product.productImages[0]?.urlString}
         component={Link}
         to={`/products/${product.id}`}
       />
@@ -62,7 +63,7 @@ const Product = ({ product }) => {
         <Button
           size="small"
           variant="contained"
-          sx={{ backgroundColor: "#282C34" }}
+          sx={{ backgroundColor: "#282C34", m: 1 }}
           onClick={() => navigate(`/products/${product.id}`)}
         >
           Detail
@@ -72,9 +73,9 @@ const Product = ({ product }) => {
           onClick={() => handleCart(product)}
           size="small"
           variant="contained"
-          sx={{ backgroundColor: "#282C34" }}
+          sx={{ backgroundColor: "#282C34", m: 1 }}
         >
-          Add to Cart
+          + Cart
         </Button>
       </CardActions>
     </Card>

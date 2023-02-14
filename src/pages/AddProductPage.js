@@ -58,7 +58,15 @@ const AddProductPage = () => {
     console.log(data);
 
     axios
-      .post("http://localhost:3001/products", data)
+      .post("http://localhost:3001/products", {
+        name: formData.name,
+        categoryId: temp,
+        brand: formData.brand,
+        description: formData.description,
+        price: formData.price,
+        stock: formData.stock,
+        urlString: formData.urlString,
+      })
       .then((response) => {
         console.log(response.data);
       })

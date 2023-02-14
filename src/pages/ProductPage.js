@@ -49,14 +49,16 @@ const ProductPage = () => {
         .then(({ data }) => {
           setProduct(data);
 
-          setImage(data.productImages[0].url_string);
+          setImage(data.productImages[0]?.urlString);
 
-          setCategory(data.category["category_name"]);
+          setCategory(data.category["categoryName"]);
         });
     },
     [params.id],
     [category]
   );
+
+  console.log(product);
 
   return (
     <Container sx={{ mt: 10 }}>
@@ -70,13 +72,13 @@ const ProductPage = () => {
         GO BACK
       </Button>
 
-      <Card key={product._id}>
+      <Card key={product.id}>
         <CardContent>
           <Grid container spacing={2}>
             <Grid item sm={6}>
               <CardMedia
                 sx={{ objectFit: "contain", width: 434, height: 512 }}
-                image={image.toString()}
+                image={image?.toString()}
                 src="product image"
               />
             </Grid>

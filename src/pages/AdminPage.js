@@ -22,9 +22,13 @@ const AdminPage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
-  const handleDelete = (id) => {};
-
-  const handleEdit = () => {};
+  const handleDelete = (id) => {
+    axios.delete(`http://localhost:3001/products/${id}`).then(() => {
+      axios.get(`http://localhost:3001/products`).then(({ data }) => {
+        setProducts(data);
+      });
+    });
+  };
 
   useEffect(() => {
     axios.get(`http://localhost:3001/products`).then(({ data }) => {
@@ -72,7 +76,7 @@ const AdminPage = () => {
                   <ButtonGroup variant="text">
                     <Button
                       variant="filled"
-                      onClick={() => handleEdit(product.id)}
+                      onClick={() => navigate(`/updateproduct/${product.id}`)}
                     >
                       <Edit />
                     </Button>
