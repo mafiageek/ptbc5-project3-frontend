@@ -16,6 +16,13 @@ const AddProductPage = () => {
   const [allCategory, setAllCategory] = useState([]);
   const [formData, setFormData] = useState({});
   const [value, setValue] = useState("");
+  const [file, setFile] = React.useState(null);
+  const [fileValue, setFileValue] = React.useState("");
+
+  const handleFileChange = (e) => {
+    setFileValue(e.target.value);
+    setFile(e.target.files[0]);
+  };
 
   const getIdFromCategoryName = (categoryName) => {
     for (const item of allCategory) {
@@ -31,12 +38,6 @@ const AddProductPage = () => {
       setAllCategory(data);
     });
   }, [value]);
-
-  // const handleCategory = () => {
-  //   axios.post("http://localhost:3001/categories/createcategory", {
-  //     category_name: category,
-  //   });
-  // };
 
   const handleChange = (event) => {
     setFormData({
@@ -54,24 +55,34 @@ const AddProductPage = () => {
       categoryId: temp,
     });
 
-    const data = JSON.stringify(formData);
-    console.log(data);
+    const uploadData = new FormData();
+    uploadData.append("file", file);
+    uploadData.append("upload_preset", "testing123antoneugene");
 
     axios
-      .post("http://localhost:3001/products", {
-        name: formData.name,
-        categoryId: temp,
-        brand: formData.brand,
-        description: formData.description,
-        price: formData.price,
-        stock: formData.stock,
-        urlString: formData.urlString,
-      })
+      .post(
+        "https://api.cloudinary.com/v1_1/dbq7yg58d/image/upload/",
+        uploadData
+      )
       .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
+        const urlString = response.data["secure_url"];
+
+        axios
+          .post("http://localhost:3001/products", {
+            name: formData.name,
+            categoryId: temp,
+            brand: formData.brand,
+            description: formData.description,
+            price: formData.price,
+            stock: formData.stock,
+            urlString: urlString,
+          })
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       });
   };
 
@@ -125,13 +136,23 @@ const AddProductPage = () => {
           variant="outlined"
           multiline
         />
-        <TextField
+        {/* <TextField
           value={formData.urlString}
           onChange={handleChange}
           fullWidth
           id="urlString"
           name="urlString"
           label="Image url"
+          variant="outlined"
+        /> */}
+        <TextField
+          label="image"
+          fullWidth
+          type="file"
+          id="image"
+          name="image"
+          onChange={handleFileChange}
+          value={fileValue}
           variant="outlined"
         />
         <FormControl>
