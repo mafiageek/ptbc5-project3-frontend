@@ -18,7 +18,7 @@ const UpdateProductPage = () => {
   const [formData, setFormData] = useState({});
   const [value, setValue] = useState("");
   const params = useParams();
-  const [image, setImage] = useState("");
+  // const [image, setImage] = useState("");
   // const navigate = useNavigate();
 
   const getIdFromCategoryName = (categoryName) => {
@@ -35,12 +35,6 @@ const UpdateProductPage = () => {
       setAllCategory(data);
     });
   }, [value]);
-
-  // const handleCategory = () => {
-  //   axios.post("http://localhost:3001/categories/createcategory", {
-  //     category_name: category,
-  //   });
-  // };
 
   const handleChange = (event) => {
     setFormData({
@@ -62,7 +56,6 @@ const UpdateProductPage = () => {
         description: formData.description,
         price: formData.price,
         stock: formData.stock,
-        urlString: image,
       })
       .then((response) => {
         console.log(response.data);
@@ -79,7 +72,7 @@ const UpdateProductPage = () => {
         setFormData(data);
         console.log(data);
         setValue(data.category["categoryName"]);
-        setImage(data.productImages[0]?.urlString);
+        // setImage(data.productImages[0]?.urlString);
       });
   }, [params.id]);
 
@@ -138,7 +131,7 @@ const UpdateProductPage = () => {
           multiline
           InputLabelProps={{ shrink: true }}
         />
-        <TextField
+        {/* <TextField
           value={image}
           onChange={(e) => setImage(e.target.value)}
           fullWidth
@@ -146,7 +139,7 @@ const UpdateProductPage = () => {
           name="urlString"
           label="Image url"
           variant="outlined"
-        />
+        /> */}
         <FormControl>
           <InputLabel>Category</InputLabel>
           <Select
