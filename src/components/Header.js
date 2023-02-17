@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useCart } from "../context/cart";
 import {
   AppBar,
@@ -21,6 +21,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [cart] = useCart();
   const { isAuthenticated, loginWithRedirect, user, logout } = useAuth0();
+  const [currentUser, setCurrentUser] = useState({});
 
   const handleLogin = async () => {
     loginWithRedirect()
@@ -34,10 +35,14 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (isAuthenticated) {
       axios
         .get(`http://localhost:3001/users?email=${user.email}`)
         .then(({ data }) => {
+          setCurrentUser({
+            id: data[0].id,
+            role: data[0].role,
+          });
           if (data.length === 0) {
             axios.post(`http://localhost:3001/users`, {
               name: user.name,
@@ -48,9 +53,9 @@ const Header = () => {
           }
         });
     }
-  }, [user]);
+  }, [isAuthenticated, user?.email, user?.name, user?.sub]);
 
-  console.log(user);
+  console.log(currentUser);
   const handleLogout = async () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };
@@ -64,15 +69,15 @@ const Header = () => {
         <Typography
           variant="h6"
           component={Link}
-          to={"/"}
+          to={"/products"}
           sx={{ flexGrow: 1, textDecoration: "none", color: "white" }}
         >
-          Home
+          Shop
         </Typography>
         <Stack direction="row" space={2}>
-          <Button color="inherit" onClick={() => navigate("/products")}>
+          {/* <Button color="inherit" onClick={() => navigate("/products")}>
             Shop
-          </Button>
+          </Button> */}
           <Button color="inherit" onClick={() => navigate("/cart")}>
             <Badge badgeContent={cart.length} color="primary">
               <ShoppingCartOutlined />
@@ -83,12 +88,22 @@ const Header = () => {
               Login
             </Button>
           )}
+          {currentUser?.role === "user" && (
+            <Button color="inherit" onClick={() => navigate("/dashboard")}>
+              DASHBOARD
+            </Button>
+          )}
+          {currentUser?.role === "admin" && (
+            <Button color="inherit" component={Link} to={"/admin"}>
+              Admin
+            </Button>
+          )}
           {isAuthenticated && (
             <>
               <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>
-              <Avatar src={user.picture} />
+              <Avatar src={user.picture} sx={{ ml: 2 }} />
             </>
           )}
         </Stack>
