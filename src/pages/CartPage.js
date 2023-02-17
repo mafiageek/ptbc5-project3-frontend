@@ -55,7 +55,7 @@ const CartPage = () => {
             <Table sx={{ minWidth: 650 }}>
               <TableBody>
                 {cart.map((product) => (
-                  <TableRow key={product.key}>
+                  <TableRow key={product.id}>
                     <TableCell>
                       <img
                         width="100"
