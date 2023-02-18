@@ -13,10 +13,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Auth0Provider
-      domain="dev-zldrlxetiu43era6.us.auth0.com"
-      clientId="5Xv0y6Epm2Md9C8q1Zbs0SNlQ3Ef3VqM"
+      domain="dev-v142ohfthr7u4kgs.au.auth0.com"
+      clientId="dfKk6fxxpMh6FdlYzQOD8eKTmjEdrdqJ"
       authorizationParams={{
         redirect_uri: window.location.origin,
+        audience: "http://localhost:3001",
       }}
     >
       <CartProvider>

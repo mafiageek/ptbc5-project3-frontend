@@ -154,6 +154,7 @@ const AddProductPage = () => {
           onChange={handleFileChange}
           value={fileValue}
           variant="outlined"
+          InputLabelProps={{ shrink: true }}
         />
         <FormControl>
           <InputLabel>Category</InputLabel>
