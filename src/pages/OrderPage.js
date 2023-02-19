@@ -18,9 +18,13 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import DropIn from "braintree-web-drop-in-react";
 
 const OrderPage = () => {
   const { user } = useAuth0();
+  const [instance, setInstance] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [clientToken, setClientToken] = useState("");
   const [address, setAddress] = useState({
     userId: "",
     id: "",
@@ -31,6 +35,16 @@ const OrderPage = () => {
   });
   const [cart, setCart] = useCart();
   const navigate = useNavigate();
+
+  const getClientToken = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:3001/orders/token");
+      setClientToken(data.clientToken);
+      console.log(data.clientToken);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -45,10 +59,21 @@ const OrderPage = () => {
           country: data[0].country,
         });
       });
-  }, [user?.email]);
 
-  const handleOrder = () => {
-    axios
+    getClientToken();
+  }, []);
+
+  const handleOrder = async () => {
+    setLoading(true);
+
+    //handle payment
+    const { nonce } = await instance.requestPaymentMethod();
+    await axios.post("http://localhost:3001/orders/payment", {
+      nonce,
+      cart,
+    });
+
+    await axios
       .post(`http://localhost:3001/orders`, {
         userId: address.userId,
         userAddressId: address.id,
@@ -56,6 +81,7 @@ const OrderPage = () => {
         orderStatus: "paid",
       })
       .then(({ data }) => {
+        console.log(data);
         cart.map((item) =>
           axios.post(`http://localhost:3001/orderItems`, {
             orderId: data.id,
@@ -63,12 +89,11 @@ const OrderPage = () => {
             quantity: item.stock,
           })
         );
-      })
-      .then(() => {
         toast.success("Thank you for your purchase");
         localStorage.removeItem("cart");
         setCart("");
         navigate("/products");
+        setLoading(false);
       });
   };
 
@@ -130,6 +155,16 @@ const OrderPage = () => {
                 <TableRow>
                   <TableCell>
                     <Typography variant="h6">PAYMENT</Typography>
+                    <>
+                      {clientToken && (
+                        <DropIn
+                          options={{
+                            authorization: clientToken,
+                          }}
+                          onInstance={(instance) => setInstance(instance)}
+                        />
+                      )}
+                    </>
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -157,12 +192,13 @@ const OrderPage = () => {
                 <TableRow>
                   <TableCell align="center">
                     <Button
+                      disabled={!instance || loading}
                       onClick={handleOrder}
                       size="small"
                       variant="contained"
                       sx={{ backgroundColor: "#282C34" }}
                     >
-                      PLACE ORDER
+                      {loading ? "PROCESSING..." : "PLACE ORDER"}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -198,6 +234,7 @@ const OrderPage = () => {
           </Table>
         </TableContainer>
       </Stack>
+      <></>
     </Container>
   );
 };
