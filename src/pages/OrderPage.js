@@ -62,7 +62,7 @@ const OrderPage = () => {
         });
     }
     getClientToken();
-  }, [user?.email, isAuthenticated]);
+  }, [user?.email, isAuthenticated, address]);
 
   const handleOrder = async () => {
     setLoading(true);

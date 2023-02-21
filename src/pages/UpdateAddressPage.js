@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Stack, TextField, Typography, Button } from "@mui/material";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const UpdateAddressPage = () => {
+  const { user, getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const [token, setToken] = useState(null);
   const [formData, setFormData] = useState({
     addressLine1: "",
     city: "",
@@ -25,12 +28,18 @@ const UpdateAddressPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .patch(`http://localhost:3001/addresses/${params.id}`, {
-        addressLine1: formData.addressLine1,
-        city: formData.city,
-        country: formData.country,
-        postal: formData.postal,
-      })
+      .patch(
+        `http://localhost:3001/addresses/${params.id}`,
+        {
+          addressLine1: formData.addressLine1,
+          city: formData.city,
+          country: formData.country,
+          postal: formData.postal,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       .then(navigate(location.state) || "/", {
         state: `/updateaddress/${params.id}`,
       });
@@ -48,7 +57,16 @@ const UpdateAddressPage = () => {
           postal: data.postal,
         });
       });
-  }, [params.id]);
+
+    if (isAuthenticated && user?.email) {
+      const getToken = async () => {
+        await getAccessTokenSilently().then((jwt) => {
+          setToken(jwt);
+        });
+      };
+      getToken();
+    }
+  }, [params.id, getAccessTokenSilently, isAuthenticated, user?.email]);
 
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
