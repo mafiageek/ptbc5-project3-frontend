@@ -74,6 +74,7 @@ const Product = ({ product }) => {
           size="small"
           variant="contained"
           sx={{ backgroundColor: "#282C34", m: 1 }}
+          disabled={product.stock === 0}
         >
           + Cart
         </Button>

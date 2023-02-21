@@ -11,6 +11,8 @@ import {
   InputLabel,
   Button,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const AddProductPage = () => {
   const [allCategory, setAllCategory] = useState([]);
@@ -18,7 +20,7 @@ const AddProductPage = () => {
   const [value, setValue] = useState("");
   const [file, setFile] = React.useState(null);
   const [fileValue, setFileValue] = React.useState("");
-
+  const navigate = useNavigate();
   const handleFileChange = (e) => {
     setFileValue(e.target.value);
     setFile(e.target.files[0]);
@@ -78,7 +80,9 @@ const AddProductPage = () => {
             urlString: urlString,
           })
           .then((response) => {
-            console.log(response.data);
+            // console.log(response.data);
+            toast.success("Added");
+            navigate("/products");
           })
           .catch((error) => {
             console.error(error);

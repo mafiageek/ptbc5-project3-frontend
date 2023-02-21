@@ -18,19 +18,38 @@ import {
 import { Edit, Delete } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
+import { useAuth0 } from "@auth0/auth0-react";
+
 const AdminPage = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+  const [token, setToken] = useState(null);
+
+  const { user, getAccessTokenSilently } = useAuth0();
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:3001/products/${id}`).then(() => {
-      axios.get(`http://localhost:3001/products`).then(({ data }) => {
-        setProducts(data);
+    axios
+      .delete(`http://localhost:3001/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(() => {
+        axios.get(`http://localhost:3001/products`).then(({ data }) => {
+          setProducts(data);
+        });
       });
+  };
+
+  const getToken = async () => {
+    await getAccessTokenSilently().then((jwt) => {
+      setToken(jwt);
     });
   };
 
   useEffect(() => {
+    if (user && !token) {
+      getToken();
+    }
+
     axios.get(`http://localhost:3001/products`).then(({ data }) => {
       setProducts(data);
     });

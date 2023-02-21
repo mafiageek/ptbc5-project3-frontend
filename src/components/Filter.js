@@ -2,38 +2,38 @@ import React from "react";
 import {
   Slider,
   Typography,
-  OutlinedInput,
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Select,
-  Chip,
+  // OutlinedInput,
+  // InputLabel,
+  // MenuItem,
+  // FormControl,
+  // Select,
+  // Chip,
   Box,
-  Rating,
+  // Rating,
   Stack,
   TextField,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+// import { useTheme } from "@mui/material/styles";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
+// const ITEM_HEIGHT = 48;
+// const ITEM_PADDING_TOP = 8;
+// const MenuProps = {
+//   PaperProps: {
+//     style: {
+//       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+//       width: 250,
+//     },
+//   },
+// };
 
-function getStyles(name, categoryName, theme) {
-  return {
-    fontWeight:
-      categoryName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
+// function getStyles(name, categoryName, theme) {
+//   return {
+//     fontWeight:
+//       categoryName.indexOf(name) === -1
+//         ? theme.typography.fontWeightRegular
+//         : theme.typography.fontWeightMedium,
+//   };
+// }
 
 const Filter = ({
   setQuery,
@@ -44,22 +44,20 @@ const Filter = ({
   filterCategory,
   setFilterCategory,
 }) => {
-  const names = category.map((item) => item.categoryName);
+  // const names = category.map((item) => item.categoryName);
 
-  const theme = useTheme();
-  const [value, setValue] = React.useState(2);
+  // const theme = useTheme();
+  // const [value, setValue] = React.useState(2);
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setFilterCategory(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-  };
-
-  console.log("filterPrice", filterPrice);
+  // const handleChange = (event) => {
+  //   const {
+  //     target: { value },
+  //   } = event;
+  //   setFilterCategory(
+  //     // On autofill we get a stringified value.
+  //     typeof value === "string" ? value.split(",") : value
+  //   );
+  // };
 
   return (
     <Box
@@ -104,7 +102,7 @@ const Filter = ({
         />
       </Stack>
 
-      <Stack sx={{ pt: 4 }}>
+      {/* <Stack sx={{ pt: 4 }}>
         <FormControl>
           <InputLabel id="category">Category</InputLabel>
           <Select
@@ -134,8 +132,8 @@ const Filter = ({
             ))}
           </Select>
         </FormControl>
-      </Stack>
-      <Stack sx={{ pt: 4 }}>
+      </Stack> */}
+      {/* <Stack sx={{ pt: 4 }}>
         <Typography component="legend">Rating</Typography>
         <Rating
           sx={{ pt: 1 }}
@@ -145,7 +143,7 @@ const Filter = ({
             setValue(newValue);
           }}
         />
-      </Stack>
+      </Stack> */}
     </Box>
   );
 };

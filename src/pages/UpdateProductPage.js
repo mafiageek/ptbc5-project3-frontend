@@ -12,6 +12,8 @@ import {
   Button,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const UpdateProductPage = () => {
   const [allCategory, setAllCategory] = useState([]);
@@ -19,7 +21,7 @@ const UpdateProductPage = () => {
   const [value, setValue] = useState("");
   const params = useParams();
   // const [image, setImage] = useState("");
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const getIdFromCategoryName = (categoryName) => {
     for (const item of allCategory) {
@@ -59,6 +61,8 @@ const UpdateProductPage = () => {
       })
       .then((response) => {
         console.log(response.data);
+        toast.success("Updated");
+        navigate("/products");
       })
       .catch((error) => {
         console.error(error);
