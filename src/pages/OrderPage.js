@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
 import DropIn from "braintree-web-drop-in-react";
 
 const OrderPage = () => {
-  const { user } = useAuth0();
+  const { user, isAuthenticated } = useAuth0();
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
   const [clientToken, setClientToken] = useState("");
@@ -47,21 +47,22 @@ const OrderPage = () => {
   };
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3001/addresses?email=${user?.email}`)
-      .then(({ data }) => {
-        setAddress({
-          userId: data[0].userId,
-          id: data[0].id,
-          address: data[0].addressLine1,
-          city: data[0].city,
-          postal: data[0].postal,
-          country: data[0].country,
+    if (isAuthenticated && user?.email) {
+      axios
+        .get(`http://localhost:3001/addresses?email=${user?.email}`)
+        .then(({ data }) => {
+          setAddress({
+            userId: data[0].userId,
+            id: data[0].id,
+            address: data[0].addressLine1,
+            city: data[0].city,
+            postal: data[0].postal,
+            country: data[0].country,
+          });
         });
-      });
-
+    }
     getClientToken();
-  }, []);
+  }, [user?.email, isAuthenticated]);
 
   const handleOrder = async () => {
     setLoading(true);
@@ -126,7 +127,7 @@ const OrderPage = () => {
                         </List>
                       </Stack>
                       <Stack direction="column">
-                        {address ? (
+                        {address?.id ? (
                           <Button
                             onClick={() =>
                               navigate(`/updateaddress/${address.id}`, {
@@ -141,11 +142,16 @@ const OrderPage = () => {
                           </Button>
                         ) : (
                           <Button
+                            onClick={() =>
+                              navigate(`/addaddress`, {
+                                state: "/order",
+                              })
+                            }
                             size="small"
                             variant="contained"
                             sx={{ backgroundColor: "#282C34", m: 1 }}
                           >
-                            Update
+                            Add
                           </Button>
                         )}
                       </Stack>

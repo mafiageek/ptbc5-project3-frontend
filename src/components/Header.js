@@ -21,7 +21,10 @@ const Header = () => {
   const navigate = useNavigate();
   const [cart] = useCart();
   const { isAuthenticated, loginWithRedirect, user, logout } = useAuth0();
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState({
+    id: "",
+    role: "",
+  });
 
   const handleLogin = async () => {
     loginWithRedirect()
@@ -39,10 +42,6 @@ const Header = () => {
       axios
         .get(`http://localhost:3001/users?email=${user.email}`)
         .then(({ data }) => {
-          setCurrentUser({
-            id: data[0].id,
-            role: data[0].role,
-          });
           if (data.length === 0) {
             axios.post(`http://localhost:3001/users`, {
               name: user.name,
@@ -50,12 +49,16 @@ const Header = () => {
               email: user.email,
               uid: user.sub,
             });
+          } else {
+            setCurrentUser({
+              id: data[0].id,
+              role: data[0].role,
+            });
           }
         });
     }
   }, [isAuthenticated, user?.email, user?.name, user?.sub]);
 
-  console.log(currentUser);
   const handleLogout = async () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
   };

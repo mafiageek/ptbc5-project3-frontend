@@ -25,7 +25,7 @@ const AdminPage = () => {
   const navigate = useNavigate();
   const [token, setToken] = useState(null);
 
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   const handleDelete = (id) => {
     axios
@@ -39,21 +39,20 @@ const AdminPage = () => {
       });
   };
 
-  const getToken = async () => {
-    await getAccessTokenSilently().then((jwt) => {
-      setToken(jwt);
-    });
-  };
-
   useEffect(() => {
-    if (user && !token) {
+    if (isAuthenticated && user?.email) {
+      const getToken = async () => {
+        await getAccessTokenSilently().then((jwt) => {
+          setToken(jwt);
+        });
+      };
       getToken();
     }
 
     axios.get(`http://localhost:3001/products`).then(({ data }) => {
       setProducts(data);
     });
-  }, []);
+  }, [getAccessTokenSilently, isAuthenticated, user?.email]);
 
   return (
     <Container sx={{ mt: 10 }}>

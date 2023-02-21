@@ -23,7 +23,7 @@ const Product = ({ product }) => {
       JSON.stringify([...cart, { ...product, stock: 1 }])
     );
   };
-  console.log(product.productImages[0]?.urlString);
+  // console.log(product.productImages[0]?.urlString);
   return (
     <Card
       sx={{

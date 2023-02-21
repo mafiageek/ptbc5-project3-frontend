@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Stack, TextField, Typography, Button } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const AddAddressPage = () => {
+  const [token, setToken] = useState(null);
   const [formData, setFormData] = useState({
     address: "",
     city: "",
     country: "",
     postal: "",
   });
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const [currentUser, setCurrentUser] = useState({
+    id: "",
+    role: "",
+  });
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -24,20 +30,46 @@ const AddAddressPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
     axios
-      .get(`http://localhost:3001/users?email=${user?.email}`)
-      .then(({ data }) => {
-        axios
-          .post(`http://localhost:3001/addresses`, {
-            userId: data[0].id,
-            addressLine1: formData.address,
-            city: formData.city,
-            country: formData.country,
-            postal: formData.postal,
-          })
-          .then(navigate(location.state) || "/");
-      });
+      .post(
+        `http://localhost:3001/addresses`,
+
+        {
+          userId: currentUser.id,
+          addressLine1: formData.address,
+          city: formData.city,
+          country: formData.country,
+          postal: formData.postal,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(navigate(location.state) || "/");
   };
+
+  useEffect(() => {
+    if (isAuthenticated && user?.email) {
+      axios
+        .get(`http://localhost:3001/users?email=${user?.email}`)
+        .then(({ data }) => {
+          console.log("data =>", data);
+          setCurrentUser({
+            id: data[0].id,
+            role: data[0].role,
+          });
+        });
+    }
+
+    const getToken = async () => {
+      await getAccessTokenSilently().then((jwt) => {
+        setToken(jwt);
+      });
+    };
+    getToken();
+    // console.log(token);
+  }, [getAccessTokenSilently, user?.email, token, isAuthenticated]);
 
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
@@ -83,13 +115,15 @@ const AddAddressPage = () => {
           variant="outlined"
           InputLabelProps={{ shrink: true }}
         />
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          sx={{ background: "black" }}
-        >
-          Submit
-        </Button>
+        {user?.email && (
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            sx={{ background: "black" }}
+          >
+            Submit
+          </Button>
+        )}
       </Stack>
     </Container>
   );
