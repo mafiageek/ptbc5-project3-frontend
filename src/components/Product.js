@@ -28,14 +28,15 @@ const Product = ({ product }) => {
     <Card
       sx={{
         maxWidth: 288,
-        height: 288,
+        margin: "0 auto",
+        padding: "0.1em",
         display: "flex",
         flexDirection: "column",
       }}
       key={product.id}
     >
       <CardMedia
-        sx={{ height: 140 }}
+        sx={{ height: 144 }}
         image={product.productImages[0]?.urlString}
         component={Link}
         to={`/products/${product.id}`}

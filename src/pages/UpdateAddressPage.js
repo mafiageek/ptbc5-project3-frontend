@@ -3,6 +3,7 @@ import axios from "axios";
 import { Container, Stack, TextField, Typography, Button } from "@mui/material";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import toast from "react-hot-toast";
 
 const UpdateAddressPage = () => {
   const { user, getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -40,7 +41,10 @@ const UpdateAddressPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       )
-      .then(navigate(location.state) || "/", {
+      .then(() => {
+        toast.success("Updated");
+      })
+      .then(() => navigate(location.state) || "/", {
         state: `/updateaddress/${params.id}`,
       });
   };
@@ -49,7 +53,7 @@ const UpdateAddressPage = () => {
     axios
       .get(`http://localhost:3001/addresses/${params.id}`)
       .then(({ data }) => {
-        console.log(data);
+        // console.log(data);
         setFormData({
           addressLine1: data.addressLine1,
           city: data.city,

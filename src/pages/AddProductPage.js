@@ -13,13 +13,16 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const AddProductPage = () => {
+  const [token, setToken] = useState(null);
   const [allCategory, setAllCategory] = useState([]);
   const [formData, setFormData] = useState({});
   const [value, setValue] = useState("");
   const [file, setFile] = React.useState(null);
   const [fileValue, setFileValue] = React.useState("");
+  const { user, getAccessTokenSilently, isAuthenticated } = useAuth0();
   const navigate = useNavigate();
   const handleFileChange = (e) => {
     setFileValue(e.target.value);
@@ -39,7 +42,16 @@ const AddProductPage = () => {
     axios.get("http://localhost:3001/categories").then(({ data }) => {
       setAllCategory(data);
     });
-  }, [value]);
+
+    if (isAuthenticated && user?.email) {
+      const getToken = async () => {
+        await getAccessTokenSilently().then((jwt) => {
+          setToken(jwt);
+        });
+      };
+      getToken();
+    }
+  }, [value, getAccessTokenSilently, isAuthenticated, user?.email]);
 
   const handleChange = (event) => {
     setFormData({
@@ -70,15 +82,21 @@ const AddProductPage = () => {
         const urlString = response.data["secure_url"];
 
         axios
-          .post("http://localhost:3001/products", {
-            name: formData.name,
-            categoryId: temp,
-            brand: formData.brand,
-            description: formData.description,
-            price: formData.price,
-            stock: formData.stock,
-            urlString: urlString,
-          })
+          .post(
+            "http://localhost:3001/products",
+            {
+              name: formData.name,
+              categoryId: temp,
+              brand: formData.brand,
+              description: formData.description,
+              price: formData.price,
+              stock: formData.stock,
+              urlString: urlString,
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          )
           .then((response) => {
             // console.log(response.data);
             toast.success("Added");

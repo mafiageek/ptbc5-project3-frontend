@@ -21,10 +21,11 @@ import toast from "react-hot-toast";
 import DropIn from "braintree-web-drop-in-react";
 
 const OrderPage = () => {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
-  const [clientToken, setClientToken] = useState("");
+  const [clientToken, setClientToken] = useState(null);
+  const [token, setToken] = useState(null);
   const [address, setAddress] = useState({
     userId: "",
     id: "",
@@ -40,7 +41,6 @@ const OrderPage = () => {
     try {
       const { data } = await axios.get("http://localhost:3001/orders/token");
       setClientToken(data.clientToken);
-      console.log(data.clientToken);
     } catch (err) {
       console.log(err);
     }
@@ -61,8 +61,14 @@ const OrderPage = () => {
           });
         });
     }
+    const getToken = async () => {
+      await getAccessTokenSilently().then((jwt) => {
+        setToken(jwt);
+      });
+    };
+    getToken();
     getClientToken();
-  }, [user?.email, isAuthenticated, address]);
+  }, []);
 
   const handleOrder = async () => {
     setLoading(true);
@@ -75,20 +81,32 @@ const OrderPage = () => {
     });
 
     await axios
-      .post(`http://localhost:3001/orders`, {
-        userId: address.userId,
-        userAddressId: address.id,
-        total: total,
-        orderStatus: "paid",
-      })
+      .post(
+        `http://localhost:3001/orders`,
+        {
+          userId: address.userId,
+          userAddressId: address.id,
+          total: total,
+          orderStatus: "paid",
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       .then(({ data }) => {
         console.log(data);
         cart.map((item) =>
-          axios.post(`http://localhost:3001/orderItems`, {
-            orderId: data.id,
-            productId: item.id,
-            quantity: item.stock,
-          })
+          axios.post(
+            `http://localhost:3001/orderItems`,
+            {
+              orderId: data.id,
+              productId: item.id,
+              quantity: item.stock,
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          )
         );
         toast.success("Thank you for your purchase");
         localStorage.removeItem("cart");
