@@ -27,16 +27,14 @@ const Product = ({ product }) => {
   return (
     <Card
       sx={{
-        maxWidth: 288,
-        margin: "0 auto",
-        padding: "0.1em",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
       }}
       key={product.id}
     >
       <CardMedia
-        sx={{ height: 144 }}
+        sx={{ height: 160, objectFit: "contain" }}
         image={product.productImages[0]?.urlString}
         component={Link}
         to={`/products/${product.id}`}
